@@ -6,7 +6,7 @@ curr_size = 0
 
 print(os.getcwd())
 
-file_path = r'C:\Users\m_manish\Desktop\LargeFile\file.txt'
+file_path = r'C:\Users\m_manish\Desktop\LargeFile\file1.txt'
 
 if not os.path.exists(file_path):
     with open(file_path, 'w'):
@@ -15,5 +15,7 @@ if not os.path.exists(file_path):
 with open(file_path,'a+') as f:
     while(curr_size<size_mx):
         curr_size = os.path.getsize(file_path)
-        f.write(str(randint(-10000,10000)) + " ")
+        f.write(str(randint(-10000,10000)) + "\n")
+
+        
             
