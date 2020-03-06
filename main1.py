@@ -1,24 +1,71 @@
-class Main:
-    def partition(self,nums, low, high):
-	    pivot = nums[high]
-	    smaller = low-1
-	    
-	    for i in range(low,high):
-	        if nums[i]<=pivot:
-	            smaller+=1
-	            
-	            nums[smaller],nums[i] = nums[i], nums[smaller]
-	    
-	    nums[smaller+1], nums[high] = nums[high], nums[smaller+1]
-	    return (smaller+1)
-    
-    def quick_sort(self,nums,low, high):
-        if low<high:
-            pi = self.partition(nums, low, high)
-            self.quick_sort(nums, low, pi-1)
-            self.quick_sort(nums, pi+1, high)
-        return nums
+import sys
 
+
+class heapnode:
+    def __init__(self, item, fileHandler):
+        self.item = item
+        self.fileHandler = fileHandler
+        
+class Main:
+    
+    def __init__(self):
+        self.sortedTempFileHandlerList = []
+        self.files = []
+
+    def heapify(self, arr, i, n):
+        left = int(2 * i) + 1
+        right = int(2 * i) + 2
+        i = int(i)
+        if left < n and arr[left].item < arr[i].item:
+            smallest = left
+        else:
+            smallest = i
+
+        if right < n and arr[right].item < arr[smallest].item:
+            smallest = right
+
+        if i != smallest:
+            (arr[i], arr[smallest]) = (arr[smallest], arr[i])
+            self.heapify(arr, smallest, n)
+
+    def construct_heap(self, arr):
+        l = len(arr) - 1
+        mid = l / 2
+        while mid >= 0:
+            self.heapify(arr, mid, l)
+            mid -= 1
+
+    def mergeSortedtempFiles_low_level(self):
+        list = []
+        dir_path = r'C:\Users\m_manish\Desktop\LargeFile\sort\\'
+        sorted_output = []
+        for tempFileHandler in self.sortedTempFileHandlerList:
+            item = int(tempFileHandler.readline().strip())
+            list.append(heapnode(item, tempFileHandler))
+
+        self.construct_heap(list)
+        index=1
+        while True:
+            min = list[0]
+            if min.item == sys.maxsize:
+                break
+            sorted_output.append(min.item)
+            fileHandler = min.fileHandler
+            item = fileHandler.readline().strip()
+            if not item:
+                item = sys.maxsize
+            else:
+                item = int(item)
+            list[0] = heapnode(item, fileHandler)
+            self.heapify(list, 0, len(list))
+            if len(sorted_output)>=20000000:
+                file = open(dir_path+"result_"+str(index)+".txt",'w')
+                file.write(str(sorted_output))
+                file.close()
+                #self.files.append(file)
+                sorted_output=[]
+                index+=1
+        return sorted_output
 
     def readData(self):
         dir_path = r'C:\Users\m_manish\Desktop\LargeFile\\'
@@ -28,7 +75,7 @@ class Main:
             data = int(f.readline())
             l.append(data)
             curr_size = len(l)
-            max_size = 50000000
+            max_size = 20000000
             index = 1
             while data is not None:
                 try:
@@ -38,10 +85,12 @@ class Main:
                         curr_size = len(l)
                     else:
                         l.sort()
-                        with open(dir_path+"sort\\temp_"+str(index)+".txt",'w') as file:
-                            #file.write(str(self.quick_sort(l,0,len(l)-1)))
-                            file.write(str(l))
-                            file.close()
+                        file = open(dir_path+"temp\\temp_"+str(index)+".txt",'w+')
+                        for i in l:
+                            file.write(str(i)+"\n")
+                        file.seek(0)
+                        self.sortedTempFileHandlerList.append(file)
+                        self.files.append(file)
                         index+=1
                         l=[]
                         l.append(data)
@@ -50,18 +99,26 @@ class Main:
                     break
                 
             l.sort()
-            with open(dir_path+"sort\\temp_"+str(index)+".txt",'w') as file:
-                file.write(str(l))
-                #file.write(str(self.quick_sort(l,0,len(l)-1)))
-                file.close()
-        
-        self.mergeChunks()
+            file = open(dir_path+"temp\\temp_"+str(index)+".txt",'w+')
+            for i in l:
+                file.write(str(i)+"\n")
+            file.seek(0)
+            self.sortedTempFileHandlerList.append(file)
+            self.files.append(file)
     
-
-    def mergeChunks(self):
-        pass            
-                
-
+    def demoRead(self):
+        dir_path = r'C:\Users\m_manish\Desktop\LargeFile\\'
+        for i in range(1,22):
+            file = open(dir_path+"temp\\temp_"+str(i)+".txt",'r')
+            self.sortedTempFileHandlerList.append(file)
+            self.files.append(file)
+            
+        
+                            
 if __name__=='__main__':
     m = Main()
-    m.readData()
+    #m.readData()
+    m.demoRead()
+    print(m.mergeSortedtempFiles_low_level())
+    for i in m.files:
+        i.close()
