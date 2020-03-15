@@ -9,7 +9,7 @@ class heapnode:
 class Main:
     
     def __init__(self):
-        self.sortedTempFileHandlerList = []
+        self.tempFileHandlers = []
         self.files = []
 
     def heapify(self, arr, i, n):
@@ -35,11 +35,11 @@ class Main:
             self.heapify(arr, mid, l)
             mid -= 1
 
-    def mergeSortedtempFiles_low_level(self):
+    def mergeSortFiles(self):
         list = []
         dir_path = r'C:\Users\m_manish\Desktop\LargeFile\sort\\'
         sorted_output = []
-        for tempFileHandler in self.sortedTempFileHandlerList:
+        for tempFileHandler in self.tempFileHandlers:
             item = int(tempFileHandler.readline().strip())
             list.append(heapnode(item, tempFileHandler))
 
@@ -49,7 +49,7 @@ class Main:
             min = list[0]
             if min.item == sys.maxsize:
                 break
-            sorted_output.append(min.item)
+            sorted_output.append(min.item)  
             fileHandler = min.fileHandler
             item = fileHandler.readline().strip()
             if not item:
@@ -89,7 +89,7 @@ class Main:
                         for i in l:
                             file.write(str(i)+"\n")
                         file.seek(0)
-                        self.sortedTempFileHandlerList.append(file)
+                        self.tempFileHandlers.append(file)
                         self.files.append(file)
                         index+=1
                         l=[]
@@ -103,22 +103,22 @@ class Main:
             for i in l:
                 file.write(str(i)+"\n")
             file.seek(0)
-            self.sortedTempFileHandlerList.append(file)
+            self.tempFileHandlers.append(file)
             self.files.append(file)
     
-    def demoRead(self):
-        dir_path = r'C:\Users\m_manish\Desktop\LargeFile\\'
-        for i in range(1,22):
-            file = open(dir_path+"temp\\temp_"+str(i)+".txt",'r')
-            self.sortedTempFileHandlerList.append(file)
-            self.files.append(file)
+    # def demoRead(self):
+    #     dir_path = r'C:\Users\m_manish\Desktop\LargeFile\\'
+    #     for i in range(1,22):
+    #         file = open(dir_path+"temp\\temp_"+str(i)+".txt",'r')
+    #         self.tempFileHandlers.append(file)
+    #         self.files.append(file)
             
         
                             
 if __name__=='__main__':
     m = Main()
-    #m.readData()
-    m.demoRead()
-    print(m.mergeSortedtempFiles_low_level())
+    m.readData()
+    #m.demoRead()
+    print(m.mergeSortFiles())
     for i in m.files:
         i.close()
